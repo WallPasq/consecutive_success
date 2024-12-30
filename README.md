@@ -1,4 +1,4 @@
-# README in English
+# Consecutive Success
 
 Welcome to this repository, which provides an implementation of a Markov Chain to analyze consecutive successes in a series of attempts.  
 This code allows you to estimate the probability of having \(p\) consecutive successes (e.g., \(p\) consecutive wins) in a user-defined number of attempts. In addition, it can generate concrete examples of success/failure sequences, making it easier to understand and practically validate the results.
