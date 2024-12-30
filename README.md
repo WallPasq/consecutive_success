@@ -21,7 +21,7 @@ This code allows you to estimate the probability of having \(p\) consecutive suc
 ## Usage Example
 
 ```python
-from markov_chain_consecutive_success import MarkovChainConsecutiveSuccess
+from consecutive_success import MarkovChainConsecutiveSuccess
 
 # Instantiate the class
 model = MarkovChainConsecutiveSuccess()
