@@ -51,30 +51,55 @@ Examples: [['FFFSS', 'FFSSF', 'FSFSS']]
 ## Points of Attention and Possible Improvements
 
 This code is still under development, and any collaboration is greatly appreciated.  
-Here are three main aspects that need enhancement:
+Here are two main aspects that need enhancement:
 
-1. **Calculating the Probability of Exactly p Consecutive Successes Only on the Last Attempt**  
-   - Currently, the `predict` method does not have a specific logic to handle scenarios in which we want to know the probability of having `p` consecutive successes only at the last attempt (`exactly_on_last_attempt`). Implementing such a calculation would add value to the library.
-
-2. **Matrix Operations Optimization**  
+1. **Matrix Operations Optimization**  
    - The code can be optimized to handle matrices more efficiently, especially in cases involving sparse matrices. Such optimization can greatly reduce memory usage and processing time for a large number of attempts.
 
-3. **Enabling Parallel Processes and GPU Optimization**  
+2. **Enabling Parallel Processes and GPU Optimization**  
    - Some calculations, such as large matrix multiplication or example generation, could benefit from parallelism and GPU usage. This is particularly relevant when there is a large number of states or more advanced computational requirements.
 
-## How to Contribute
+## Project Setup
 
-1. Fork this repository.  
+Follow the steps below to quickly set up the project environment using `uv`:
+
+### Step 1: Install `uv`
+
+Follow the installation guide for your operating system available on the [`uv` GitHub repository](https://github.com/astral-sh/uv).
+
+### Step 2: How to Contribute
+
+1. Fork this repository.
 2. Create a branch for your feature or bug fix:  
    ```bash
    git checkout -b feature/my-new-feature
    ```
-3. Commit your changes and push to GitHub:  
+3. Set up your local environment by creating a virtual environment with `uv`:  
+   ```bash
+   uv venv
+   ```
+4. Activate the virtual environment:
+   - **On Windows**:  
+     ```bash
+     .venv\Scripts\activate
+     ```
+   - **On macOS/Linux**:  
+     ```bash
+     source .venv/bin/activate
+     ```
+5. Synchronize dependencies:  
+   ```bash
+   uv sync
+   ```
+6. Make your contributions: add features, fix bugs, or implement improvements. Your help is greatly appreciated!
+7. Commit your changes and push to GitHub:  
    ```bash
    git commit -m "feat: Add my new feature"
    git push origin feature/my-new-feature
    ```
-4. Open a pull request describing your contributions and wait for feedback.
+8. Open a pull request describing your contributions and wait for feedback.
+
+For further details, consult the [`uv` official documentation](https://docs.astral.sh/uv/).
 
 Feel free to open issues or propose improvements of any kind. All help is welcome to make this project more comprehensive and robust!
 
