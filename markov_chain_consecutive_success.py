@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 from itertools import product
 from typing import Any, Type, List, Union
 
@@ -74,8 +75,8 @@ class MarkovChainConsecutiveSuccess:
             if any(i <= 0 for i in examples):
                 raise ValueError("Each value in 'examples' must be an int greater than or equal to 0.")
         
-        elif examples <= 0:
-            raise ValueError("'examples' must be and int greater than or equal to 0.")
+        elif examples < 0:
+            raise ValueError("'examples' must be an int greater than or equal to 0.")
 
         if not is_list_exactly_on_last_attempt:
             exactly_on_last_attempt = [exactly_on_last_attempt] * len(args)
@@ -88,31 +89,30 @@ class MarkovChainConsecutiveSuccess:
             
         arguments = zip(args, exactly_on_last_attempt, exactly_consecutive_success, examples)
         predictions = []
-        examples = []
+        examples_list = []
 
         for p, ela, ecs, e in arguments:
             
             if p == 0:
-                predictions.append(self.probabilities_matrix[0, 0])
+                predictions.append(self.probabilities_matrix[1, 0, 0])
 
-            # I still haven't figured out how to calculate the probability of finishing with exactly p consecutive successes without having achieved them previously.
-            elif ela:
-                pass
-                
+            elif ela and p < self.attempts:
+                predictions.append(self.probabilities_matrix[0, p-1, p-1] * self.success_probability)
+                    
             elif ecs and p < self.attempts:
-                predictions.append(self.probabilities_matrix[p-1, p] - self.probabilities_matrix[p, p+1])
+                predictions.append(self.probabilities_matrix[1, p-1, p] - self.probabilities_matrix[1, p, p+1])
 
             else:
-                predictions.append(self.probabilities_matrix[p-1, p])
+                predictions.append(self.probabilities_matrix[1, p-1, p])
 
             
             if e:
-                examples.append(self._generate_examples(p, ela, ecs, e))
+                examples_list.append(self._generate_examples(p, ela, ecs, e))
             else:
-                examples.append("")
+                examples_list.append("")
 
         if any(examples):
-            return predictions, examples
+            return predictions, examples_list
         
         return predictions
 
@@ -149,7 +149,7 @@ class MarkovChainConsecutiveSuccess:
         transition_matrix = np.zeros((self.attempts, self.attempts+1, self.attempts+1))
 
         for i in range(self.attempts):
-            transition_matrix[i, (i+1), (i+1)] = 1  # Absorbent state.
+            transition_matrix[i, (i+1), (i+1)] = 1  # Absorvent state.
             transition_matrix[i, :(i+1), 0] = self.failure_probability
             np.fill_diagonal(transition_matrix[i, :, 1:(i+2)], self.success_probability)
 
@@ -167,8 +167,13 @@ class MarkovChainConsecutiveSuccess:
 
         transition_matrix = self._create_transition_matrix()
 
-        for _ in range(self.attempts):
-            probabilities_matrix = np.vstack([probabilities_matrix[i] @ transition_matrix[i] for i in range(self.attempts)])
+        for i in range(self.attempts):
+            if i == self.attempts - 1:
+                prior_probabilities_matrix = deepcopy(probabilities_matrix)
+
+            probabilities_matrix = np.vstack([probabilities_matrix[j] @ transition_matrix[j] for j in range(self.attempts)])
+
+        probabilities_matrix = np.array([prior_probabilities_matrix, probabilities_matrix])
 
         return probabilities_matrix
 
@@ -197,39 +202,34 @@ class MarkovChainConsecutiveSuccess:
         if not isinstance(exactly_consecutive_success, bool):
             raise ValueError(f"'exactly_consecutive_success must be a boolean.")
 
-        if not isinstance(exactly_consecutive_success, bool):
-            raise ValueError(f"'exactly_consecutive_success must be a boolean.")
-
-        if not isinstance(exactly_consecutive_success, bool):
-            raise ValueError(f"'exactly_consecutive_success must be a boolean.")
-
         if not isinstance(examples, int) or examples < 0:
             raise ValueError(f"'examples' must be an int greater than 0.")
 
         if consecutive_success == 0:
-            return "F" * self.attempts
+            return ["F" * self.attempts]
 
         if consecutive_success == self.attempts:
-            return "S" * self.attempts
+            return ["S" * self.attempts]
 
         all_possibilities = map(lambda x: "".join(x), product("FS", repeat=self.attempts))
-        consecutive_success = "S" * consecutive_success
+        consecutive_success_str = "S" * consecutive_success
         examples_list = []
 
         if exactly_on_last_attempt:
-            example_generator = filter(lambda x: x.endswith(consecutive_success) and consecutive_success not in x[:-1], all_possibilities)
+            example_generator = filter(lambda x: x.endswith(consecutive_success_str) and consecutive_success_str not in x[:-1], all_possibilities)
 
         elif exactly_consecutive_success:
-            example_generator = filter(lambda x: consecutive_success in x and consecutive_success + "S" not in x, all_possibilities)        
+            example_generator = filter(lambda x: consecutive_success_str in x and consecutive_success_str + "S" not in x, all_possibilities)        
 
         else:
-            example_generator = filter(lambda x: consecutive_success in x, all_possibilities)
+            example_generator = filter(lambda x: consecutive_success_str in x, all_possibilities)
 
         for _ in range(examples):
-            if len(examples_list) > 0 and examples_list[-1] is None:
-                examples_list = examples_list[:-1]
+            nxt = next(example_generator, None)
+
+            if nxt is None:
                 break
 
-            examples_list.append(next(example_generator, None))
+            examples_list.append(nxt)
 
         return examples_list
