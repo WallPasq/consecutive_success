@@ -20,17 +20,18 @@ class MarkovChainConsecutiveSuccess:
         attempts (int): Number of attempts or states in the chain. Must be greater than or equal to 2.
         success_probability (float): Probability of success at each state. Must be between 0.0 and 1.0.
 
-        Raises:
-        ValueError: If input types or values are invalid.
+        Raises
+        TypeError: If input types are invalid.
+        ValueError: If values are invalid.
         """
         if not isinstance(attempts, int):
-            raise ValueError(f"'attempts' must be an int, got {type(attempts).__name__}.")
+            raise TypeError(f"'attempts' must be an int, got {type(attempts).__name__}.")
 
         if attempts < 2:
             raise ValueError("'attempts' must be greater than or equal to 2.")
 
         if not isinstance(success_probability, float):
-            raise ValueError(f"'success_probability' must be a float, got {type(success_probability).__name__}.")
+            raise TypeError(f"'success_probability' must be a float, got {type(success_probability).__name__}.")
 
         if not (0.0 <= success_probability <= 1.0):
             raise ValueError("'success_probability' must be between 0.0 and 1.0.")
@@ -60,10 +61,14 @@ class MarkovChainConsecutiveSuccess:
         float: Predicted probabilities.
 
         Raises:
-        ValueError: If input types or values are invalid.
+        TypeError: If input types are invalid.
+        ValueError: If values are invalid.
         """
-        if any(not isinstance(i, int) or i < 0 or i > self.attempts for i in args):
-            raise ValueError(f"Each value in 'args' must be an int between 0 and {self.attempts}.")
+        if any(not isinstance(i, int) for i in args):
+            raise TypeError(f"Each value in 'args' must be an int.")
+
+        if any(i < 0 or i > self.attempts for i in args):
+            raise ValueError(f"Each value in 'args' must be between 0 and {self.attempts}.")
 
         is_list_exactly_on_last_attempt = self._validate_instance_or_list(bool, exactly_on_last_attempt, "exactly_on_last_attempt")
         is_list_exactly_consecutive_success = self._validate_instance_or_list(bool, exactly_consecutive_success, "exactly_consecutive_success")
@@ -134,13 +139,13 @@ class MarkovChainConsecutiveSuccess:
         bool: True if the parameter is a list, False otherwise.
 
         Raises:
-        ValueError: If validation fails.
+        TypeError: If validation fails.
         """
         if not isinstance(param, (instance, list)):
-            raise ValueError(f"'{param_name}' must be a {instance.__name__} or a list of {instance.__name__}.")
+            raise TypeError(f"'{param_name}' must be a {instance.__name__} or a list of {instance.__name__}.")
 
         if isinstance(param, list) and not all(isinstance(b, instance) for b in param):
-            raise ValueError(f"All elements in '{param_name}' must be {instance.__name__}.")
+            raise TypeError(f"All elements in '{param_name}' must be {instance.__name__}.")
 
         return isinstance(param, list)
 
@@ -202,19 +207,26 @@ class MarkovChainConsecutiveSuccess:
         str: Generated examples.
 
         Raises:
-        ValueError: If input types or values are invalid.
+        TypeError: If input types are invalid.
+        ValueError: If values are invalid.
         """
-        if not isinstance(consecutive_success, int) or consecutive_success < 0 or consecutive_success > self.attempts:
-            raise ValueError(f"'consecutive_success' must be an int between 0 and {self.attempts}.")
+        if not isinstance(consecutive_success, int):
+            raise TypeError(f"'consecutive_success' must be an int, got {type(consecutive_success).__name__}.")
+
+        if consecutive_success < 0 or consecutive_success > self.attempts:
+            raise ValueError(f"'consecutive_success' must be between 0 and {self.attempts}.")
 
         if not isinstance(exactly_on_last_attempt, bool):
-            raise ValueError("'exactly_on_last_attempt must be a boolean.")
+            raise TypeError("'exactly_on_last_attempt must be a boolean.")
 
         if not isinstance(exactly_consecutive_success, bool):
-            raise ValueError("'exactly_consecutive_success must be a boolean.")
+            raise TypeError("'exactly_consecutive_success must be a boolean.")
 
-        if not isinstance(examples, int) or examples < 0:
-            raise ValueError("'examples' must be an int greater than 0.")
+        if not isinstance(examples, int):
+            raise TypeError(f"'examples' must be an int, got {type(examples).__name__}.")
+
+        if examples < 0:
+            raise ValueError("'examples' must be greater than 0.")
 
         if consecutive_success == 0:
             return ["F" * self.attempts]
