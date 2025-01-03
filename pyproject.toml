@@ -1,7 +1,7 @@
 [project]
 name = "consecutive_success"
 version = "0.1.0"
-description = ""
+description = "Python package for modeling consecutive successes in a Markov chain, offering customizable parameters, probability predictions, and example generation. Ideal for exploring Markov chain concepts or statistical modeling, with contributions welcome."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
