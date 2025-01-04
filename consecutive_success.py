@@ -210,24 +210,6 @@ class MarkovChainConsecutiveSuccess:
         TypeError: If input types are invalid.
         ValueError: If values are invalid.
         """
-        if not isinstance(consecutive_success, int):
-            raise TypeError(f"'consecutive_success' must be an int, got {type(consecutive_success).__name__}.")
-
-        if consecutive_success < 0 or consecutive_success > self.attempts:
-            raise ValueError(f"'consecutive_success' must be between 0 and {self.attempts}.")
-
-        if not isinstance(exactly_on_last_attempt, bool):
-            raise TypeError("'exactly_on_last_attempt must be a boolean.")
-
-        if not isinstance(exactly_consecutive_success, bool):
-            raise TypeError("'exactly_consecutive_success must be a boolean.")
-
-        if not isinstance(examples, int):
-            raise TypeError(f"'examples' must be an int, got {type(examples).__name__}.")
-
-        if examples < 0:
-            raise ValueError("'examples' must be greater than 0.")
-
         if consecutive_success == 0:
             return ["F" * self.attempts]
 
